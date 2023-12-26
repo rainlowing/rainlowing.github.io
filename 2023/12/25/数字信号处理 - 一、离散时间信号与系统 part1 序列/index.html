@@ -1,35 +1,208 @@
-extends partial/layout
-
-include mixins
-
-block site_title
-    != page.title + " · " + config.title
-
-block description
-    - var desc = page.desc || strip_html(page.content).replace(/^\s*/, '').replace(/\s*$/, '').substring(0, 150);
-    meta(name="description", content=desc)
-
-block content
-  .autopagerize_page_element: .content: .post-page
-    include mixins
-    +make_post(page, true)
-    .share
-      .evernote
-        a.fa.fa-bookmark(href="",onclick="javascript:join_favorite()", ref="sidebar")
-      .weibo
-        a.fa.fa-weibo(href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&title=',e(d.title),'&appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));")
-      .twitter
-        - var twitter_text = encodeURI(__('Share_text') + "\n\n" + config.title+" · "+page.title+"\n"+config.url+"/"+page.path+"\n")
-        a.fa.fa-twitter(href=url_for("http://twitter.com/intent/tweet?text="+ twitter_text))
-    - var prev = page.prev ? page.prev.path : false;
-    - var next = page.next ? page.next.path : false;
-    .pagination
-      ul.clearfix
-        if prev
-          li.pre.pagbuttons
-            a.btn(role="navigation",href=url_for(prev), title=page.prev.title)!= __('prev_post')
-        if next
-          li.next.pagbuttons
-            a.btn(role="navigation",href=url_for(next), title=page.next.title)!= __('next_post')
-    if page.comments
-        include partial/comments
+<!DOCTYPE html><html lang="zh-CN" id="theme-light-mode"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="rainlowing"><title>【数字信号系统】Part1 序列 · 喂鱼子酱</title><meta name="description" content="第一章 离散时间信号与系统1.1 离散时间信号——序列1.1.1 序列离散时间信号是时间上不连续的序列。
+序列 $ x(n) $ 可以看成是对模拟信号 $ x_a(t) $ 的等间隔时间采样，即：
+ $ x(n) = x_a(t)\left.\right|_{t=nT} = x_a(nT) $ ，其"><meta name="keywords" content="Blog,博客,Hexo"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="shortcut icon" type="image/x-icon" href="/images/favicon.webp"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/blog_basic.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="stylesheet" href="/css/insight.css"><link rel="stylesheet" href="/css/search.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"><script src="/js/jquery.js"></script><meta name="generator" content="Hexo 6.3.0"></head><body><div class="page-top animated fadeInDown"><div class="nav"><li> <a href="/">首页</a></li><li> <a href="/archives">归档</a></li><li> <a href="/tags">标签</a></li><li> <a href="/about">关于</a></li><li> <a href="/links">友链</a></li></div><div class="information"><div class="nav_right_btn"><li><a class="fa fa-chevron-left" onclick="window.history.go(-1)"> </a></li><li><a class="fa fa-search" onclick="openWindow();"></a></li><li><a class="fa fa-sun-o" onclick="darkLightToggle();"></a></li></div><div class="avatar"><img src="/images/logo.webp"></div></div></div><div class="sidebar animated fadeInDown"><div class="sidebar-top"><div class="logo-title"><div class="title"><img src="/images/logo@2x.webp" style="width:220px;" alt="favicon"><h3 title=""><a href="/">喂鱼子酱</a></h3><div class="description"><p>もう一回、もう一回。</p></div></div><ul class="social-links"><li><a target="_blank" rel="noopener" href="https://github.com/rainlowing"><i class="fa fa-github"></i></a></li><li><a href="mailto:rainlowing@outlook.com"><i class="fa fa-envelope"></i></a></li><li><a target="_blank" rel="noopener" href="https://twitter.com/rainlowing"><i class="fa fa-twitter"></i></a></li></ul></div></div><div class="footer"><div class="p"> <span> 全站CC-BY-SA-3.0 </span><i class="fa fa-star"></i><span> rainlowing</span></div><div class="by_farbox"><span>Powered by </span><a href="https://hexo.io/zh-cn/" target="_blank">Hexo </a><span> & </span><a href="https://github.com/Lhcfl/hexo-theme-anatolo" target="_blank">Anatolo </a></div><div class="beian"></div></div></div><div class="main"><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post animated fadeInDown"><div class="post-title"><h3><a>【数字信号系统】Part1 序列</a></h3></div><div class="post-content"><p><h1 id="第一章-离散时间信号与系统"><a href="#第一章-离散时间信号与系统" class="headerlink" title="第一章 离散时间信号与系统"></a>第一章 离散时间信号与系统</h1><h2 id="1-1-离散时间信号——序列"><a href="#1-1-离散时间信号——序列" class="headerlink" title="1.1 离散时间信号——序列"></a>1.1 离散时间信号——序列</h2><h3 id="1-1-1-序列"><a href="#1-1-1-序列" class="headerlink" title="1.1.1 序列"></a>1.1.1 序列</h3><p>离散时间信号是时间上不连续的序列。</p>
+<p>序列 $ x(n) $ 可以看成是对模拟信号 $ x_a(t) $ 的等间隔时间采样，即：</p>
+<p> $ x(n) = x_a(t)\left.\right|_{t=nT} = x_a(nT) $ ，其中 $ T $ 是离散时间间隔， $ n $ 为整数。</p>
+<p><strong>序列的表示法</strong></p>
+<ul>
+<li>函数表示法</li>
+</ul>
+<p>​    如 $ x(n) = a^{n}u(n) $ </p>
+<ul>
+<li>数列表示法</li>
+</ul>
+<p>​    如 $ x(n) = {… ,-5,-3,\underline{-1},0,2,7,9,…} $ ，带有下划线表示  $ n = 0 $ 时即 $ x(0) $ 的值</p>
+<ul>
+<li>图形表示法</li>
+</ul>
+<p>​    如：<img src="https://raw.githubusercontent.com/rainlowing/PicGoStorage/master/img/image-20231225141831732.png" alt=""></p>
+<h3 id="1-1-2-序列的运算"><a href="#1-1-2-序列的运算" class="headerlink" title="1.1.2 序列的运算"></a>1.1.2 序列的运算</h3><p>数字信号处理中，序列的运算由三个基本运算单元实现：加法器、乘法器、延时单元</p>
+<p>序列运算包含三类：</p>
+<ul>
+<li>基于对序列幅度 $ x(n) $ 的运算</li>
+<li>基于对序列变量 $ n $ 的运算</li>
+<li>基于既对幅度 $ x(n) $ 的运算，又对变量 $ n $ 的运算</li>
+</ul>
+<h4 id="基于对幅度的运算"><a href="#基于对幅度的运算" class="headerlink" title="基于对幅度的运算"></a>基于对幅度的运算</h4><ol>
+<li>加法：同序号 $ (n) $ 的序列值对应相加构成新序列</li>
+</ol>
+<p>​     $ z(n) = x(n) + y(n) $ </p>
+<ol>
+<li>乘法：同序号 $ (n) $ 的序列值对应相乘构成新序列</li>
+</ol>
+<p>​     $ w(n) = x(n)y(n) $ </p>
+<ol>
+<li>累加： $ y(n) $ 在某个 $ n $ 上的值等于这个 $ n $ 上的 $ x(n) $ 值以及这个 $ n $ 以前的所有 $ n $ 上的 $ x(n) $ 值之和</li>
+</ol>
+<p>​     $ y(n) = \sum\limits_{k=-∞}^{n}x(k) $ </p>
+<ol>
+<li>绝对可和： $ S = B &lt; ∞ $ 时，称序列 $ x(n) $ 是绝对可和序列。用以判断序列的傅里叶变换是否存在以及系统是否稳定</li>
+</ol>
+<p>​     $ S = \sum\limits_{n=-∞}^{∞}\left|x(n)\right| $ </p>
+<ol>
+<li>能量： $ E[x(n)] = A &lt; ∞ $ 时，称 $ x(n) $ 为能量信号</li>
+</ol>
+<p>​     $ E [x(n)] = \sum\limits_{n=-∞}^{n}{\left|x(n)\right|}^2 $ </p>
+<ol>
+<li>平均功率： $ P[x(n)] = C &lt; ∞ $，即极限存在时，称序列 $ x(n) $ 是功率信号</li>
+</ol>
+<p>​     $ P[x(n)] = \lim\limits_{N→∞}\frac{1}{2N+1}\sum\limits_{n=-N}^{N}{\left|x(n)\right|}^2$ </p>
+<p>​    一般来说，周期信号、随机信号的存在时间是无限的，因此它们不是能量信号而是功率信号</p>
+<p>​    对于周期信号，只考虑一个周期 $ N $ 的平均功率即可</p>
+<p>​     $ P[x(n)] = \frac{1}{N}\sum\limits_{n=0}^{N-1}{\left|x(n)\right|}^2 $ </p>
+<h4 id="基于对变量的运算"><a href="#基于对变量的运算" class="headerlink" title="基于对变量的运算"></a>基于对变量的运算</h4><ol>
+<li>移位： $ x(n-m) $ 是 $ x(n) $ 的移位序列</li>
+</ol>
+<p>​    当 $ m $ 为正数时，表示序列 $ x(n) $ 逐项依次右移（延时） $ m $ 位</p>
+<p>​    当 $ m $ 为负数时，表示序列 $ x(n) $ 逐项依次左移（超前） $ \left|m\right| $ 位</p>
+<ol>
+<li>翻褶（镜像、反转）：使序列关于某个纵轴翻褶</li>
+</ol>
+<p>​    序列 $ x(n) $ 关于纵轴 $ n = 0  $ 的翻褶为序列 $ x(-n) $ </p>
+<p>​    序列 $ x(n-m) $ 关于纵轴 $ n=0 $ 的翻褶为序列 $ x(-n-m) $ </p>
+<ol>
+<li>时间尺度变换：改编对模拟信号的抽样频率</li>
+</ol>
+<ul>
+<li>抽取（下抽样变换）：减少抽样频率，表示为</li>
+</ul>
+<p>​     $ x_d(n) = x(Dn) $ ，其中 $ D $ 为整数</p>
+<ul>
+<li>插值（上抽样变换）：增加抽样频率，如零插值表示为</li>
+</ul>
+<p>​     $ x_I^{‘}(n)=\begin{cases} x(n/I), &amp;n=mI,I\text{ 为整数},m=0,±1,±2,… \ 0,&amp;\text{其他 }n\end{cases} $ </p>
+<p>​    抽取和插值运算所得到的系统是线性移变系统，在时间轴 $ (n) $ 上有压缩或扩展的作用</p>
+<blockquote>
+<p>移变：系统的输出和输入间存在延迟关系，即如果输入信号随时间发生移动或延迟，那么输出信号也会发生相应的移动或延迟，但不会改变信号的形状或特性</p>
+</blockquote>
+<p>​    抽取和插值是多抽样率数字信号处理的基础</p>
+<p><img src="https://raw.githubusercontent.com/rainlowing/PicGoStorage/master/img/image-20231225145938573.png" alt=""></p>
+<h4 id="既对幅度运算又对变量运算"><a href="#既对幅度运算又对变量运算" class="headerlink" title="既对幅度运算又对变量运算"></a>既对幅度运算又对变量运算</h4><ol>
+<li>差分</li>
+</ol>
+<p>​    一阶前向差分： $ \triangle x(n) = x(n+1)-x(n) $ </p>
+<p>​    一阶后向差分： $ \triangledown x(n) = x(n) - x(n-1) $ </p>
+<blockquote>
+<p>由此可以得出一阶情况下： $ \triangledown x(n) = \triangle x(n-1) $ </p>
+</blockquote>
+<p><img src="https://raw.githubusercontent.com/rainlowing/PicGoStorage/master/img/image-20231225150604901.png" alt=""></p>
+<ol>
+<li>卷积</li>
+</ol>
+<p>​     $ y(n) = x(n) \ast h(n) = \sum\limits_{m=-∞}^{∞}x(m)h(n-m) = \sum\limits_{m=-∞}^{∞}x(n-m)h(m) $ </p>
+<ol>
+<li>相关</li>
+</ol>
+<p>​     $ r_{xy}(m) = \sum\limits_{n=-∞}^{∞}x(n)y(n-m) $ </p>
+<ol>
+<li>对称分量</li>
+</ol>
+<ul>
+<li><p>对实序列 $ x(n) $ 有偶对称分量 $ x_e(n) $ 和奇对称分量 $ x_o(n) $ </p>
+<p> $ x_e(n) = \frac{1}{2}[x(n) + x(-n)] $ </p>
+<p> $ x_o(n) = \frac{1}{2}[x(n) - x(-n)] $ </p>
+</li>
+<li><p>对复序列 $ x(n) $ 有共轭对称分量 $ x_e(n) $ 和共轭反对称分量 $ x_o(n) $ </p>
+<p> $ x_e(n) = \frac{1}{2}[x(n) + x^*(-n)] $ </p>
+<p> $ x_o(n) = \frac{1}{2}[x(n) - x^*(-n)] $ </p>
+</li>
+<li><p>满足 $ x(n) = x_e(n) + x_o(n) $ </p>
+</li>
+</ul>
+<h3 id="1-1-3-序列的卷积"><a href="#1-1-3-序列的卷积" class="headerlink" title="1.1.3 序列的卷积"></a>1.1.3 序列的卷积</h3><p>卷积是线性时不变系统中求输出响应（零状态响应）的一种重要运算</p>
+<blockquote>
+<p>零状态响应：系统在初始状态为零的情况下，对输入信号的输出响应</p>
+</blockquote>
+<p>在模拟信号通过线性时不变系统时，输出 $ y(t) $ 、输入 $ x(t) $ 、系统单位冲激响应 $ h(t) $ 之间有以下卷积积分关系：</p>
+<p> $ y(t) = x(t) \ast h(t) = \int_{-∞}^{∞}x(τ)h(t-τ){dτ} $ </p>
+<blockquote>
+<p>单位冲激响应：线性时不变系统对单位冲激函数的响应</p>
+<p>单位冲激函数：又称狄拉克<em>δ</em>函数，是一个面积为1、宽度无限趋近0、高度无限大的广义函数 $δ(t)$ ，在 $t = 0$ 时取无穷大，其他时刻取值为0。在信号与系统学科中用以描述一个理想化的的窄脉冲，但实际工程中不存在这样的脉冲，只能近似模拟</p>
+</blockquote>
+<p>在序列通过离散时间线性移不变系统时，输出 $ y(t) $ 、输入 $ x(n) $ 、系统单位抽样响应 $ h(n) $ 之间有以下卷积关系：</p>
+<p> $ y(n) = x(n) \ast h(n) = \sum\limits_{m=-∞}^{∞}x(m)h(n-m) $ </p>
+<blockquote>
+<p>单位抽样响应：线性移不变系统对单位抽样函数的响应</p>
+<p>单位抽样函数：单位冲激函数的离散形式 $δ[n] $ ，当 $ n=0 $ 时取值为1，其他时刻取值为0</p>
+</blockquote>
+<h4 id="卷积运算步骤与计算方法"><a href="#卷积运算步骤与计算方法" class="headerlink" title="卷积运算步骤与计算方法"></a>卷积运算步骤与计算方法</h4><p>参考：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Vd4y1e7pj/">【官方双语】那么……什么是卷积？ -  视频作者：3Blue1Brown</a></p>
+<p><strong>结论1</strong>：若 $ x(n) $ 在 $ N_1 ≤ n ≤ N_2 $ 范围内有非零值， $ h(n) $ 在 $ N_3 ≤ n ≤ N_4 $ 范围内有非零值，则 $ y(n) = x(n) \ast h(n)  $ 在 $ N_1+N_3 ≤ n ≤ N_2+N_4 $ 范围内有值</p>
+<p><strong>结论2</strong>：若 $ x(n) $ 在 $ N_1 ≤ n ≤ N_2 $ 范围内有值， $ h(n) $ 在 $ N_3 ≤ n ≤ N_4 $ 范围内有值，则 $ y(n) = x(n) \ast h(n)  $ 的长度 $ L = (N_2-N_1+1) + (N_4-N_3+1)+1 $ </p>
+<h3 id="1-1-4-序列的相关"><a href="#1-1-4-序列的相关" class="headerlink" title="1.1.4 序列的相关"></a>1.1.4 序列的相关</h3><p>相关在随机信号的数字处理中用于描述一个平稳随机信号的统计特性，在实际工作中，也常用于研究经过一段时间差后两个信号之间的相似程度</p>
+<blockquote>
+<p>平稳随机信号：在统计意义上具有稳定特性的随机信号</p>
+</blockquote>
+<h3 id="1-1-5-常用的典型序列"><a href="#1-1-5-常用的典型序列" class="headerlink" title="1.1.5 常用的典型序列"></a>1.1.5 常用的典型序列</h3><ol>
+<li>单位抽样序列</li>
+</ol>
+<p>​     $ δ(n) = \begin{cases} 1,&amp; n=0 \ 0,&amp; n≠0 \end{cases}$ </p>
+<ol>
+<li>单位阶跃序列</li>
+</ol>
+<p>​     $ u(n) = \begin{cases} 1, &amp; n≥0 \ 0, &amp; n&lt;0 \end{cases} $ </p>
+<p><strong>结论1</strong>： $ δ(n) = u(n) - u(n-1) $ ，即单位抽样序列是单位阶跃序列的一阶向后差分</p>
+<p><strong>结论2</strong>： $ u(n) = \sum\limits_{m=0}^{∞}δ(n-m) = δ(n) + δ(n-1)+δ(n-2)+… $ ，即单位阶跃序列是由 $ n=0 $ 开始的一组延迟的单位抽样序列之和</p>
+<p><strong>结论3</strong>：任意因果序列 $ x(n) $ 与单位阶跃序列 $ u(n) $ 的卷积，将会得到此因果序列的累加序列，即 $ u(n)*x(n) = \sum\limits_{m=0}^{n}x(m)u(n-m) = \sum\limits_{m=0}^{n}x(m) $ </p>
+<ol>
+<li>矩形序列</li>
+</ol>
+<p>​     $ R_N(n) = \begin{cases} 1, &amp; 0≤n≤N-1 \ 0, &amp; \text{其他} n \end{cases} $</p>
+<p><strong>结论4</strong>： $ R_N(n) = \sum\limits_{m=0}^{N-1}δ(n-m) = δ(n) + δ(n-1)+…+δ(n-N+1) $ </p>
+<p><strong>结论5</strong>： $ R_N(n) = u(n) - u(n-N) $ </p>
+<ol>
+<li>实指数序列</li>
+</ol>
+<p>​     $ x(n) = a^nu(n), a \text{为实数} $</p>
+<p>​    当 $ \left|a\right|<1 $ 时序列收敛，当 $ \left|a\right| > 1 $ 时序列发散</p>
+<ol>
+<li>复指数序列</li>
+</ol>
+<p>​     $ x(n) = e^{(σ+jω_0)n} = e^{σn}e^{jω_0n} = e^{σn}[\cos(ω_0n)+j\sin(ω_0n)] $ </p>
+<p>​    可分解为实部序列 $ e^{σn}\cos(ω_0n) $ 和虚部序列 $ e^{σn}\sin(ω_0n) $， 或模序列 $ e^{σn} $ 和相角序列 $ ω_0n $ </p>
+<p>​    当指数为纯虚数时，复指数序列为 $ x(n) = e^{jω_0n} $ </p>
+<ol>
+<li>正弦序列</li>
+</ol>
+<p>​     $ x(n) = A\sin(ω_0n+φ) $ ，其中 $ A $ 为幅度， $ ω_0 $ 为频率， $ φ $ 为起始相位</p>
+<p>​    $ ω_0 $ 是数字域频率，由于n是无量纲的整数，所以$ ω_0 $ 的单位为弧度（rad），表达了从 $ n $ 到 $ n+1 $ 两相邻采样点之间正弦序列的相位差，即正弦序列变化的快慢</p>
+<blockquote>
+<p>Tip：正弦序列在时域上未必具有周期性（在下一节讨论）。若将正弦序列视为 $ ω_0 $ 的函数，其周期为 2π ，即 $ A\sin(ω_0n+φ) = A\sin[(ω_0+2mπ)n+φ] $（$ m $ 为整数），故 $ ω_0 $ 一般取值范围为 $ -π≤ ω_0 ≤ π $ 或 $ 0 ≤ ω_0 ≤ 2π $ </p>
+</blockquote>
+<p>​    若将正弦序列视为模拟正弦信号 $ x_α(t) = A\sin(Ω_0t+φ) $ 的抽样（ $ Ω_0 $ 的单位为 rad/s ），则有 $ x(n) = x_α(nT) = A\sin(Ω_oTn+φ) $ ， $ ω_0 $ 表示在一个抽样间隔 $ T $ 上正弦信号的相位差弧度</p>
+<p>​    对于一般意义的数字域频率 $ ω $ 和抽样频率 $ f_s $ ，模拟角频率 $ Ω $ 和模拟频率 $ f $ ，抽样间隔 $ T $ 有：</p>
+<p>​     $ w = ΩT = \frac{Ω}{f_s} = \frac{2πf}{f_s}\text{(rad)}，其中f_s = \frac{1}{T} $ 。当 $ f = f_s $ 时， $ ω = 2π $ ；当 $ f = \frac{f_s}{2} $ 时， $ ω = π $ </p>
+<p>​    <strong>在模拟信号的数字处理中， $ f = f_s $ （即 $ ω = π $ ）这一频率是模拟信号的最高频率分量</strong>，超过这一频率就会产生频率响应的混叠失真，在后面时域抽样定理中会详细讨论</p>
+<h3 id="1-1-6-序列的周期"><a href="#1-1-6-序列的周期" class="headerlink" title="1.1.6 序列的周期"></a>1.1.6 序列的周期</h3><p>若对任意 $ n $ 都存在最小的正整数 $ N $ 满足：$ x(n) = x(n +Nr), r=0,±1,±2,… $ ，则称序列 $ x(n) $ 为周期性序列</p>
+<h4 id="正弦信号的周期性"><a href="#正弦信号的周期性" class="headerlink" title="正弦信号的周期性"></a>正弦信号的周期性</h4><p>正弦信号 $ x_α(t)=A\sin(Ω_0+φ) $ 是周期性信号，其最小正周期 $ T_0 = \frac{2π}{Ω_0} $ </p>
+<p>周期性要求满足 $ x_α(t) = x_α(t+T_0)   $ ，得 $ A\sin(Ω_0t+φ) = A\sin[Ω_0(t+T_0)+φ] $ </p>
+<p>只需 $ Ω_0T_0 = 2π $ 即 $ T_0 = \frac{2π}{Ω_0} $ </p>
+<h4 id="正弦序列的周期性"><a href="#正弦序列的周期性" class="headerlink" title="正弦序列的周期性"></a>正弦序列的周期性</h4><p>周期性要求满足 $ x(n) = x(n+N) $ ，<strong>其中 $ N $ 为整数</strong>，得 $ A\sin(nω_0+φ) = A\sin[(n+N)ω_0+φ] $ </p>
+<p>故要求 $ Nω_0 = 2πM $ ，<strong>其中 $ M $ 为整数</strong>，有 $ N = \frac{2πM}{ω_0} $ ，分情况讨论周期性：</p>
+<ul>
+<li>当 $ \frac{2π}{ω_0} $ 为整数时， $ N $ 为整数，取 $ M=1 $ 时有最小正周期 $ N = \frac{2π}{ω_0} $ </li>
+<li>当 $ \frac{2π}{ω_0} $ 不是整数但为有理数时，$ M ≠ 1 $，取使 $ \frac{2π}{ω_0}M $ 为最小正整数的整数 $ M $ ，有最小正周期 $ N=\frac{2π}{ω_0}M $ （这时 $ N $ 和 $ M $ 互为素数）</li>
+<li>当 $ \frac{2π}{ω_0} $ 是无理数时，任何 $ M $ 都不能使 $ N $ 成为正整数，正弦序列没有周期性</li>
+</ul>
+<h4 id="正弦序列与正弦信号"><a href="#正弦序列与正弦信号" class="headerlink" title="正弦序列与正弦信号"></a>正弦序列与正弦信号</h4><p>若一个正弦序列由一个正弦信号抽样得到，讨论抽样时间间隔 $ T $ （抽样频率 $ f_s $ ）与正弦信号周期 $ T_0 $ （频率 $ f_0 $ ）间的关系，使抽样得到的正弦序列是周期序列：</p>
+<p> $ \frac{2π}{ω_0} = \frac{2π}{Ω_0T} = \frac{1}{f_0T} = \frac{T_0}{T} = \frac{f_S}{f_0}$</p>
+<ul>
+<li>当 $ \frac{2π}{ω_0} $ 为整数时，取 $ T_0 = NT $ 或 $ f_s = Nf_0 $，有最小正周期 $ N = \frac{2π}{ω_0} $ </li>
+</ul>
+<p>​    即一个正弦信号周期 $ T_0 $ 内有 $ N $ 个抽样时间间隔 $ T $ ，或抽样频率 $ f_s $ 是整数 $ N $ 倍的正弦信号频率 $ f_0 $ 时，正弦序列具有周期性</p>
+<ul>
+<li>当 $ \frac{2π}{ω_0} $ 不是整数但为有理数时，取使 $ \frac{T_0}{T}M $ 或 $ \frac{f_S}{f_0}M $ 为最小整数的整数 $ M $ （$ MT_0 = NT $ 或 $ Mf_s = Nf_0 $），有最小正周期 $ N = \frac{2π}{ω_0}M $（这时 $ N $ 和 $ M $ 互为质数）</li>
+</ul>
+<p>​    即 $ M $ 个正弦信号周期 $ T_0 $ 内有 $ N $ 个抽样时间间隔 $ T $ ，或 $ M $ 倍抽样频率 $ f_s $ 等于 $ N $ 倍的正弦信号频率 $ f_0 $ 时，正弦序列具有周期性</p>
+<ul>
+<li>当 $ \frac{2π}{ω_0} $ 是无理数时，正弦序列没有周期性</li>
+</ul>
+<h4 id="复指数序列的周期性"><a href="#复指数序列的周期性" class="headerlink" title="复指数序列的周期性"></a>复指数序列的周期性</h4><p>对于复指数序列 $ e^{[σ+j(ωn+φ)]} $ 可以利用欧拉公式 $ e^{jθ} = \cosθ + j \sinθ $ 进行展开：</p>
+<p>$ e^{[σ+j(ωn+φ)]} = e^{σ} \cdot e^{j(ωn+φ)} = e^{σ} \cdot (\cos(ωn+φ) + j \sin(ωn+φ)) $</p>
+<p>其实部序列 $ e^{σ}\cdot\cos(ωn+φ) $ 只控制信号的增强或减弱，对周期性无影响</p>
+<p>其虚部序列  $ e^{σ}\cdot j\sin(ωn+φ) $ 的周期性表现在 $ \sin(ωn+φ) $ 部分，讨论同正弦序列</p>
+<h3 id="1-1-7-单位抽样序列的特性"><a href="#1-1-7-单位抽样序列的特性" class="headerlink" title="1.1.7 单位抽样序列的特性"></a>1.1.7 单位抽样序列的特性</h3><p><strong>特性1</strong>： $ δ(n) $ 的选择性</p>
+<p>由于单位抽样序列 $ δ(n) $ 满足 $ δ(n) = \begin{cases} 1,&amp; n=0 \ 0,&amp; n≠0 \end{cases}$ ，故有 $ δ(n - m) = \begin{cases} 1,&amp; m = n \ 0,&amp; m≠n \end{cases}$ ，则</p>
+<p> $ x(m) \cdot δ(n - m) = \begin{cases} x(n),&amp; m = n \ 0,&amp; m≠n \end{cases}$ </p>
+<p><strong>特性2</strong>：任意序列 $ x(n) $ 与单位抽样序列 $ δ(n) $ 卷积等于该序列 $ x(n) $ 本身</p>
+<p><strong>特性3</strong>：任意序列 $ x(n) $ 与单位抽样序列的移位序列 $ δ(n-n_0) $ 卷积等于该序列做相同移位的序列 $ x(n-n_0) $</p>
+</p></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2023-12-25</span><i class="fa fa-tag"></i><a class="tag" href="/tags/数字信号处理/" title="数字信号处理">数字信号处理 </a><i class="fa fa-tag"></i><a class="tag" href="/tags/知识/" title="知识">知识 </a><span class="leancloud_visitors"></span><span>大约3438个字, 11分钟27秒读完</span></div></div></div></div><div class="share"><div class="evernote"><a class="fa fa-bookmark" href="" onclick="javascript:join_favorite()" ref="sidebar"></a></div><div class="weibo"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></div><div class="twitter"><a class="fa fa-twitter" target="_blank" rel="noopener" href="http://twitter.com/intent/tweet?text=%E5%88%86%E4%BA%AB%E6%96%87%E7%AB%A0%EF%BC%9A%0A%0A%E5%96%82%E9%B1%BC%E5%AD%90%E9%85%B1%20%C2%B7%20%E3%80%90%E6%95%B0%E5%AD%97%E4%BF%A1%E5%8F%B7%E7%B3%BB%E7%BB%9F%E3%80%91Part1%20%E5%BA%8F%E5%88%97%0Ahttp://example.com/2023/12/25/%E6%95%B0%E5%AD%97%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%20-%20%E4%B8%80%E3%80%81%E7%A6%BB%E6%95%A3%E6%97%B6%E9%97%B4%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F%20part1%20%E5%BA%8F%E5%88%97/%0A"></a></div></div><div class="pagination"><ul class="clearfix"><li class="next pagbuttons"><a class="btn" role="navigation" href="/2023/12/24/%E6%95%B0%E5%AD%97%E4%BF%A1%E5%8F%B7%E5%A4%84%E7%90%86%20-%20%E7%BB%AA%E8%AE%BA/" title="【数字信号系统】绪论">下一篇</a></li></ul></div><script src="/js/visitors.js"></script></div></div></div></div><script src="/js/darkLightToggle.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script><script src="/js/add-bookmark.js"></script><script>(function(window){var INSIGHT_CONFIG={TRANSLATION:{POSTS:"文章",PAGES:"页面",CATEGORIES:"分类",TAGS:"标签",UNTITLED:"(无标题)",},CONTENT_URL:"/content.json",};window.INSIGHT_CONFIG=INSIGHT_CONFIG})(window);</script><script src="/js/insight.js" defer></script><div class="searchbox ins-search"><div class="searchbox-container ins-search-container"><div class="searchbox-input-wrapper"><input class="searchbox-input ins-search-input" type="text" placeholder="想要查找什么..."><span class="searchbox-close"><a class="fa fa-times-circle" onclick="closeWindow();"></a></span></div><div class="searchbox-result-wrapper ins-section-wrapper"><div class="ins-section-container"><p>Seraching...</p></div></div></div></div></body></html>
